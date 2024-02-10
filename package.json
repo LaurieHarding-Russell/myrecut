@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "devDependencies": {
+    "@types/node": "16.18.11",
+    "rollup": "2.42.0",
+    "@rollup/plugin-node-resolve": "^13.2.1",
+    "typescript": "4.8.4"
+  },
+  "scripts": {},
+  "dependencies": {
+    "jwt-decode": "^3.1.2",
+    "tslib": "^2.3.1",
+    "rxjs": "7.8.1"
+  }
+}

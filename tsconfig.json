@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "declaration": true,
+    "importHelpers": true,
+    "lib": ["es2020", "dom"],
+    "target": "es2015",
+    "module": "es2020",
+    "inlineSourceMap": true,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+ }
+}
