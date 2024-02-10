@@ -8,10 +8,10 @@
 
   <body>
     <h1>My Recut</div>
-    <form action="/api" method="post" enctype="multipart/form-data">
+    <form action="/recut" method="post" enctype="multipart/form-data">
       <label for="file">Original video</label>
       <input id="file" name="file" type="file" />
-      <textarea id="recut-text"></textarea>
+      <textarea id="recut-text" name="text"></textarea>
 
       <button>Recut</button>
     </form>

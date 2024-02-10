@@ -36,6 +36,7 @@ py_binary(
     deps = [
         "@pypi//flask:pkg",
         "@pypi//waitress:pkg",
+        "@pypi//deepspeech:pkg",
     ],
     data = ["//static:static"]
 )
