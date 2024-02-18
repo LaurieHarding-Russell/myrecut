@@ -10,7 +10,12 @@ formElement!.addEventListener('submit', (event: any) => {
       body: formData,
     };
     
-    fetch(url, fetchOptions);
+    const response = fetch(url, fetchOptions)
+            .then( res => res.blob() )
+            .then( blob => {
+                var file = window.URL.createObjectURL(blob);
+                window.location.assign(file);
+            });
 
     event.preventDefault();
 });

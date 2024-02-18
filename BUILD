@@ -5,13 +5,6 @@ load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
 load("@rules_python//python:defs.bzl", "py_binary", "py_test")
 load("@rules_python//python:pip.bzl", "compile_pip_requirements")
 
-npm_link_package(
-    name = "node_modules/@pumkinspicegames/graphics_engine",
-    src = "//game-front-end/graphics-engine:pumpkinSpiceEngine",
-    # root_package = "",
-    visibility = ["//:__subpackages__"],
-)
-
 npm_link_all_packages(name = "node_modules")
 
 ts_config(
@@ -37,6 +30,8 @@ py_binary(
         "@pypi//flask:pkg",
         "@pypi//waitress:pkg",
         "@pypi//deepspeech:pkg",
+        "@pypi//moviepy:pkg",
+        "@pypi//werkzeug:pkg",
     ],
     data = ["//static:static"]
 )
