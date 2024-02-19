@@ -12,7 +12,7 @@ class RecutProcess:
         self.tempFileName = "temp" + tempId
         self.PATH_TO_RESOURCES = PATH_TO_RESOURCES
 
-    def processAllWordsInClip(self):
+    def processAllWordsInClip(self) -> list[RecutWord]:
         tempFileName = self.tempFileName + ".mp4"
         movie = VideoFileClip(tempFileName)
         textFrames: deepspeech.Metadata = self.__getTextMetadataFromMovie(movie)

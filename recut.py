@@ -1,9 +1,12 @@
+from collections import Counter
 from io import BytesIO
+from itertools import groupby
+
 from flask import Flask, send_from_directory, request, send_file, make_response
 from moviepy.editor import *
 from werkzeug.datastructures import FileStorage
 from multiprocessing import Pool
-from RecutService import RecutProcess
+from RecutProcess import RecutProcess
 from RecutWord import RecutWord
 
 app = Flask(__name__, static_url_path="")
@@ -27,14 +30,14 @@ def recut():
     file.save(tempFileName)  # Moviepy requires us to save to a file since its calling commands on your machine to do the actual work :(
     movie = VideoFileClip(tempFileName)
 
-    # movie.write_videofile('temp0.mp4', logger=None)
-
     process = RecutProcess(text=text, tempId="0", PATH_TO_RESOURCES=PATH_TO_RESOURCES)
     allWordClips = process.processAllWordsInClip()
     wordClip, missingWords = findClipLocationsForWords(allWordClips, text)
 
     if len(missingWords) > 0:
         return make_response("Could not find the following words " + ','.join(missingWords), 400)
+        # return make_response("Could not find the following words " + ','.join(missingWords) +
+        #                      " words: " + ",".join(map(lambda a : a.getWord(), allWordClips)), 400)
 
     recutMovie = soundClipsToMovieClips(movie, wordClip)
 
@@ -66,7 +69,6 @@ def soundClipsToMovieClips(movie: VideoFileClip, wordClips: list[RecutWord]):
     with open('recut.mp4', 'rb') as file:
         data = file.read()
     return data
-
 
 if __name__ == "__main__":
     from waitress import serve

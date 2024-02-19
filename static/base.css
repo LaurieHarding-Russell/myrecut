@@ -1,9 +1,13 @@
+@layer theme, util;
+
 @keyframes example {
     0%   {
         background-color: rgb(99, 0, 0);
+        height: 2rem;
     }
     50%  {
         background-color: rgb(255, 180, 118);
+        height: 1rem;
     }
     100% {
         background-color: red;
@@ -12,11 +16,23 @@
 
 #spinner {
     display:none;
-    .spinner {
-        display:block;
+    &.spinner {
+        display:inline-block;
         background-color: red;
         animation-name: example;
-        animation-duration: 10s ease-in-out infinite
+        animation-duration: 10s ease-in-out infinite;
+        width: 2rem;
     }
 
+}
+
+.title {
+    background: var(--primary)
+}
+
+@layer theme {
+    * {
+        --primary: #393752;
+        --secondary: #00ff00
+    }
 }

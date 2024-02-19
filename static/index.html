@@ -7,20 +7,15 @@
   </head>
 
   <body>
-    <h1>My Recut</h1>
+    <h1 class="title">My Recut</h1>
     <form action="/recut" method="post" enctype="multipart/form-data">
       <label for="file">Original video</label>
       <input id="file" name="file" type="file" />
       <textarea id="recut-text" name="text"></textarea>
 
-      <button>Recut</button>
+      <button id="submit">Recut</button>
+      <div id="spinner"></div>
     </form>
-    <div id="spinner"></div>
-
-    <h2>Run the code locally</h2>
-    <div>
-      Just go to https://github.com/LaurieHarding-Russell/myrecut and follow the instructions!
-    </div>
 
     <script src="./bundle.js"></script>
   </body>

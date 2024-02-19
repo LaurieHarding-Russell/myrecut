@@ -11,5 +11,3 @@ Run:
 Add python dependency:
 1. add to requirements.in
 2. run `bazel run //:requirements.update`
-Attributions
-- using edu.cmu.sphinx:sphinx4
