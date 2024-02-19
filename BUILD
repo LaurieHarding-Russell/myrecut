@@ -32,6 +32,11 @@ py_binary(
         "@pypi//deepspeech:pkg",
         "@pypi//moviepy:pkg",
         "@pypi//werkzeug:pkg",
+        "@pypi//librosa:pkg"
     ],
-    data = ["//static:static"]
+    data = [
+        "//static:static",
+        "@pmml//file",
+        "@scorer//file",
+    ]
 )

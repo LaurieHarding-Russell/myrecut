@@ -1,4 +1,5 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
 
 http_archive(
     name = "rules_python",
@@ -31,6 +32,20 @@ pip_parse(
 load("@pypi//:requirements.bzl", "install_deps")
 
 install_deps()
+
+# Resources
+http_file(
+    name = "pmml",
+    downloaded_file_path = "deepspeech-0.9.3-models.pbmm",
+    urls = ["https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/deepspeech-0.9.3-models.pbmm"]
+)
+
+http_file(
+    name = "scorer",
+    downloaded_file_path = "deepspeech-0.9.3-models.scorer",
+    urls = ["https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/deepspeech-0.9.3-models.scorer"],
+    sha256 = "d0cf926ab9cab54a8a7d70003b931b2d62ebd9105ed392d1ec9c840029867799"
+)
 
 #  UI
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
