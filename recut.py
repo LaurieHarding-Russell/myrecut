@@ -7,9 +7,14 @@ from moviepy.editor import *
 from werkzeug.datastructures import FileStorage
 import deepspeech
 
+from recutWord import RecutWord
+
 app = Flask(__name__, static_url_path="")
 
 TEMP_FILE_NAME = "temp.mp4"
+
+
+PATH_TO_RESOURCES = os.path.dirname(__file__)
 
 
 @app.route("/")
@@ -27,8 +32,8 @@ def recut():
     text: list[str] = request.form.get("text").split(" ")
 
     textFrames: deepspeech.Metadata = getTextMetadataFromMovie(movie, text)
-    soundFrames = findLargestChunkOfSoundFromText(textFrames.transcripts, text)
-    recutMovie = soundClipsToMovieClips(movie, soundFrames)
+    wordClip = findClipLocationsForWords(textFrames.transcripts, text)
+    recutMovie = soundClipsToMovieClips(movie, wordClip)
 
     if recutMovie is None:
         return make_response("Could not find text and make movie", 400)
@@ -36,49 +41,50 @@ def recut():
 
 
 def getTextMetadataFromMovie(movie: VideoClip, text: list[str]) -> deepspeech.Metadata:
-    # movie.audio.write_audiofile("temp.wav", nbytes=2, codec='pcm_s16le')
-    movie.audio.write_audiofile("temp.wav", 16000, 2, 2000, "pcm_s16le")
-    ws = os.path.dirname(__file__)
-    pathToPbmm = os.path.join(ws, "external/pmml/file/deepspeech-0.9.3-models.pbmm")
-    pathToScorer = os.path.join(ws, "external/scorer/file/deepspeech-0.9.3-models.scorer")
-    # fin = librosa.load('test.wav', sr=16000)
-    fin = wave.open('temp.wav', 'rb')
-    frames = fin.getnframes()
-    buffer = fin.readframes(frames)
+    data16 = getAudioAsDeepspeechAudioInput(movie)
 
-    data16 = np.frombuffer(buffer, dtype=np.int16)
-
+    pathToPbmm = os.path.join(PATH_TO_RESOURCES, "external/pmml/file/deepspeech-0.9.3-models.pbmm")
+    pathToScorer = os.path.join(PATH_TO_RESOURCES, "external/scorer/file/deepspeech-0.9.3-models.scorer")
     model = deepspeech.Model(pathToPbmm)
     model.enableExternalScorer(pathToScorer)
-    for word in text:
-        # https://deepspeech.readthedocs.io/en/master/HotWordBoosting-Examples.html
-        model.addHotWord(word, 10)
+    # for word in text:
+    #     # https://deepspeech.readthedocs.io/en/master/HotWordBoosting-Examples.html
+    #     model.addHotWord(word, 10)
     text = model.sttWithMetadata(data16, num_results=10)
-    print(model.stt(data16))
     return text
 
 
-def findLargestChunkOfSoundFromText(textFrames: list[deepspeech.CandidateTranscript], text: list[str]) -> list[tuple[int, int]]:
-    frames: list[tuple[int, int]] = []
-    for word in text:
-        for frame in textFrames:
-            start, end = analyzeFrameForWords(frame, word)
-            if start is not None:
-                # raise Exception("Can't find word " + word)
-                frames.append((start, end))
+def getAudioAsDeepspeechAudioInput(movie: VideoClip):
+    movie.audio.write_audiofile("temp.wav", fps=16000, nbytes=2, ffmpeg_params=["-ac", "1"])
+    fin = wave.open('temp.wav', 'rb')
+    frames = fin.getnframes()
+    buffer = fin.readframes(frames)
+    return np.frombuffer(buffer, dtype=np.int16)
 
+
+def findClipLocationsForWords(textFrames: list[deepspeech.CandidateTranscript], text: list[str]) -> list[RecutWord]:
+    frames: list[RecutWord] = []
+    wordsInFrames: list[RecutWord] = []
+    for frame in textFrames:
+        wordsInFrames.extend(analyzeFrameForWords(frame))
+
+    for word in text:
+        for recutWord in wordsInFrames:
+            if word == recutWord.getWord():  # Fixme, maybe should make it random instead of grabbing first.
+                frames.append(recutWord)
     return frames
 
 
-def analyzeFrameForWords(frame: deepspeech.CandidateTranscript, word: str) -> tuple[int, int]:
+def analyzeFrameForWords(frame: deepspeech.CandidateTranscript) -> list[RecutWord]:
     token: deepspeech.TokenMetadata
     buildWord: str = ""
+    recutWords: list[RecutWord] = []
     startTime = None
-    endTime = 0
     for token in frame.tokens:
-        if token.text == "":
+        if token.text == " ":
             if len(buildWord) > 0:
                 endTime = token.start_time
+                recutWords.append(RecutWord(word=buildWord, start=startTime, stop=endTime, confidence=frame.confidence))
             buildWord = ""
             startTime = None
         else:
@@ -86,15 +92,13 @@ def analyzeFrameForWords(frame: deepspeech.CandidateTranscript, word: str) -> tu
             if startTime is None:
                 startTime = token.start_time
 
-    if token.text == word:
-        return startTime, endTime
-    return None, None
+    return recutWords
 
 
-def soundClipsToMovieClips(movie: VideoFileClip, soundFrames: list[deepspeech.TokenMetadata]):
+def soundClipsToMovieClips(movie: VideoFileClip, wordClips: list[RecutWord]):
     clips = []
-    for frame in soundFrames:
-        clips.append(movie.subclip(frame.start_time(), frame.start_time() + 1))
+    for wordClip in wordClips:
+        clips.append(movie.subclip(wordClip.getStart(), wordClip.getStop()))
 
     if len(clips) == 0:
         return None
