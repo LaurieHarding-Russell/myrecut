@@ -25,7 +25,7 @@ compile_pip_requirements(
 
 py_binary(
     name = "recut",
-    srcs = ["recut.py", "recutWord.py"],
+    srcs = ["recut.py", "RecutService.py", "RecutWord.py"],
     deps = [
         "@pypi//flask:pkg",
         "@pypi//waitress:pkg",

@@ -1,4 +1,6 @@
-const formElement = document.querySelector('form');
+const formElement: HTMLFormElement = document.querySelector('form')!;
+const spinner: HTMLDivElement = document.getElementById('spinner') as HTMLDivElement;
+
 formElement!.addEventListener('submit', (event: any) => {
     const form = event.currentTarget;
     const url = new URL(form.action);
@@ -9,12 +11,14 @@ formElement!.addEventListener('submit', (event: any) => {
       method: form.method,
       body: formData,
     };
-    
+
+    spinner.setAttribute("class", "spinner")
     const response = fetch(url, fetchOptions)
             .then( res => res.blob() )
             .then( blob => {
                 var file = window.URL.createObjectURL(blob);
                 window.location.assign(file);
+                spinner.removeAttribute("class");
             });
 
     event.preventDefault();

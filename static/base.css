@@ -1,0 +1,22 @@
+@keyframes example {
+    0%   {
+        background-color: rgb(99, 0, 0);
+    }
+    50%  {
+        background-color: rgb(255, 180, 118);
+    }
+    100% {
+        background-color: red;
+    }
+  }
+
+#spinner {
+    display:none;
+    .spinner {
+        display:block;
+        background-color: red;
+        animation-name: example;
+        animation-duration: 10s ease-in-out infinite
+    }
+
+}
