@@ -32,15 +32,22 @@ def init():
 def index():
     return send_from_directory("static", "index.html")
 
+@app.route("/state", methods=['GET'])
+def getState():
+    global allWordClips
+    dict = {}
+    for x in allWordClips:
+        dict[x] = [value.serialize() for value in allWordClips[x]]
+    return jsonify(dict)
 
 @app.route("/analyze", methods=['POST'])
 def processMovie():
     global allWordClips
     file: FileStorage = request.files.get("file")
     filename = file.filename.split('.')[0]
-    file.save(filename)  # Moviepy requires us to save to a file since its calling commands on your machine to do the actual work :(
+    file.save(join(PATH_TO_RESOURCES, file.filename))  # Moviepy requires us to save to a file since its calling commands on your machine to do the actual work :(
 
-    process = RecutProcess(text=text, fileName=filename, PATH_TO_RESOURCES=PATH_TO_RESOURCES)
+    process = RecutProcess(fileName=filename, PATH_TO_RESOURCES=PATH_TO_RESOURCES)
     allWordClips[filename] = process.processAllWordsInClip()
     saveRecutWordsToFile(os.path.join(recutFolder, filename), allWordClips.get(filename))
     # return jsonify(allWordClips)

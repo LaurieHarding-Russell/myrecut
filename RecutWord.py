@@ -19,9 +19,13 @@ class RecutWord:
     def getConfidence(self) -> float:
         return self.confidence
 
-    def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=True, indent=4)
+    def serialize(self):
+        return {
+            'word': self.word,
+            'start': self.start,
+            'stop': self.stop,
+            'confidence': self.confidence,
+        }
 
 
 def loadRecutWordsFromFile(fileName: str) -> list[RecutWord]:

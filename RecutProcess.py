@@ -1,4 +1,6 @@
 import wave
+from os.path import join
+
 import numpy as np
 from moviepy.editor import *
 import deepspeech
@@ -7,13 +9,12 @@ from RecutWord import RecutWord
 
 class RecutProcess:
 
-    def __init__(self, text: list[str], fileName: str, PATH_TO_RESOURCES: str):
-        self.text = text
+    def __init__(self, fileName: str, PATH_TO_RESOURCES: str):
         self.fileName = fileName
         self.PATH_TO_RESOURCES = PATH_TO_RESOURCES
 
     def processAllWordsInClip(self) -> list[RecutWord]:
-        tempFileName = self.fileName + ".mp4"
+        tempFileName = join(self.PATH_TO_RESOURCES, self.fileName + ".mp4")
         movie = VideoFileClip(tempFileName)
         textFrames: deepspeech.Metadata = self.__getTextMetadataFromMovie(movie)
         return self.__findAllPossibleWords(textFrames.transcripts)
