@@ -1,16 +1,22 @@
-@layer theme, util;
+@layer base, theme, util;
 
-@keyframes example {
+@keyframes spinner {
     0%   {
-        background-color: rgb(99, 0, 0);
+        filter: brightness(1.00);
         height: 2rem;
+        border-radius: 2rem;
     }
     50%  {
-        background-color: rgb(255, 180, 118);
+        filter: brightness(1.5);
         height: 1rem;
+        border-radius: 1px;
+        rotate: -90deg;
     }
     100% {
-        background-color: red;
+        filter: brightness(1.00);
+        height: 2rem;
+        border-radius: 2rem;
+        rotate: -180deg;
     }
   }
 
@@ -18,21 +24,51 @@
     display:none;
     &.spinner {
         display:inline-block;
-        background-color: red;
-        animation-name: example;
-        animation-duration: 10s ease-in-out infinite;
+        background-color: var(--primary);
+        animation: spinner 5s ease-in-out infinite;
         width: 2rem;
     }
 
 }
 
+#file {
+    border: 1px solid #ccc;
+    padding: 1rem 0.5rem;
+    cursor: pointer;
+    margin: 1rem 0.25rem;
+}
+
+#recut {
+    display: block;
+    padding: 1rem;
+    font-size: 1.5rem;
+    background: var(--primary);
+    color: var(--primary-font);
+    margin-top: 0.5rem;
+}
+
 .title {
-    background: var(--primary)
+    background: var(--primary);
+    color: var(--primary-font);
+    padding: 0.5rem;
+    border-bottom: 5px var(--primary-accent) solid;
+    max-width: 50rem;
+}
+
+@layer base {
+    button {
+        cursor: pointer;
+    }
+
+    label {
+        display: block;
+    }
 }
 
 @layer theme {
     * {
         --primary: #393752;
-        --secondary: #00ff00
+        --primary-font: #d2d1dd;
+        --primary-accent: #090620;
     }
 }

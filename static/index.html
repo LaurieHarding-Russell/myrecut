@@ -8,14 +8,19 @@
 
   <body>
     <h1 class="title">My Recut</h1>
-    <form action="/recut" method="post" enctype="multipart/form-data">
-      <label for="file">Original video</label>
-      <input id="file" name="file" type="file" />
-      <textarea id="recut-text" name="text"></textarea>
-
-      <button id="submit">Recut</button>
+    <form action="/analyze" method="post" enctype="multipart/form-data">
+      <div>
+        <label for="file">Upload video for analysis</label>
+        <input id="file" name="file" type="file" />
+        <button id="submit">Update</button>
+      </div>
+      <ul id="list-of-uploaded">
+      </ul>
       <div id="spinner"></div>
     </form>
+
+    <textarea id="recut-text" name="text"></textarea>
+    <button id="recut">Recut</button>
 
     <script src="./bundle.js"></script>
   </body>

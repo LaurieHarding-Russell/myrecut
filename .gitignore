@@ -64,9 +64,6 @@ logs
 results
 tmp
 
-# Build
-static/css/main.css
-
 # Coverage reports
 coverage
 
@@ -91,7 +88,4 @@ dist/**/*
 # ignore yarn.lock
 yarn.lock
 
-# Secrets for now
-secrets.prod
-src/main/resources/application-prod.properties
-deploy/docker-compose.yml
+__pycache__
