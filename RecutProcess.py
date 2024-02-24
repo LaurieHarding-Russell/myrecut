@@ -7,13 +7,13 @@ from RecutWord import RecutWord
 
 class RecutProcess:
 
-    def __init__(self, text: list[str], tempId: str, PATH_TO_RESOURCES: str):
+    def __init__(self, text: list[str], fileName: str, PATH_TO_RESOURCES: str):
         self.text = text
-        self.tempFileName = "temp" + tempId
+        self.fileName = fileName
         self.PATH_TO_RESOURCES = PATH_TO_RESOURCES
 
     def processAllWordsInClip(self) -> list[RecutWord]:
-        tempFileName = self.tempFileName + ".mp4"
+        tempFileName = self.fileName + ".mp4"
         movie = VideoFileClip(tempFileName)
         textFrames: deepspeech.Metadata = self.__getTextMetadataFromMovie(movie)
         return self.__findAllPossibleWords(textFrames.transcripts)
@@ -21,7 +21,7 @@ class RecutProcess:
     def __getTextMetadataFromMovie(self, movie: VideoClip) -> deepspeech.Metadata:
         data16 = self.__getAudioAsDeepspeechAudioInput(movie)
         model = self.__setupModel()
-        return model.sttWithMetadata(data16, num_results=10)
+        return model.sttWithMetadata(data16, num_results=1)
 
     def __setupModel(self) -> deepspeech.Model:
         pathToPbmm = os.path.join(self.PATH_TO_RESOURCES, "external/pmml/file/deepspeech-0.9.3-models.pbmm")
@@ -34,9 +34,9 @@ class RecutProcess:
         return model
 
     def __getAudioAsDeepspeechAudioInput(self, movie: VideoClip):
-        tempFileName = self.tempFileName + ".wav"
-        movie.audio.write_audiofile(tempFileName, fps=16000, nbytes=2, ffmpeg_params=["-ac", "1"])
-        fin = wave.open(tempFileName, 'rb')
+        fileName = self.fileName + ".wav"
+        movie.audio.write_audiofile(fileName, fps=16000, nbytes=2, ffmpeg_params=["-ac", "1"])
+        fin = wave.open(fileName, 'rb')
         frames = fin.getnframes()
         buffer = fin.readframes(frames)
         return np.frombuffer(buffer, dtype=np.int16)
