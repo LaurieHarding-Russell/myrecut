@@ -50,8 +50,7 @@ def processMovie():
     process = RecutProcess(fileName=filename, PATH_TO_RESOURCES=PATH_TO_RESOURCES)
     allWordClips[filename] = process.processAllWordsInClip()
     saveRecutWordsToFile(os.path.join(recutFolder, filename), allWordClips.get(filename))
-    # return jsonify(allWordClips)
-    return "ugg not deserializable by default"
+    return getState()
 
 
 @app.route("/recut", methods=['POST'])
