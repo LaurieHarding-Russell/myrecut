@@ -14,10 +14,8 @@ app = Flask(__name__, static_url_path="")
 PATH_TO_RESOURCES = os.path.dirname(__file__)
 DEEP_SPEECH_TIME_STEP = 0.2
 
-
-text: list[str] = []
 allWordClips: dict[str, list[RecutWord]] = {}
-recutFolder = "recutAnalysis"
+recutFolder = join(PATH_TO_RESOURCES, "recutAnalysis")
 
 
 def init():
@@ -37,9 +35,7 @@ def index():
 
 @app.route("/analyze", methods=['POST'])
 def processMovie():
-    global text
     global allWordClips
-    text = request.form.get("text").split(" ")
     file: FileStorage = request.files.get("file")
     filename = file.filename.split('.')[0]
     file.save(filename)  # Moviepy requires us to save to a file since its calling commands on your machine to do the actual work :(
@@ -51,8 +47,10 @@ def processMovie():
     return "ugg not deserializable by default"
 
 
-@app.route("/recut", methods=['GET'])
+@app.route("/recut", methods=['POST'])
 def recut():
+    global allWordClips
+    text: list[str] = request.json["text"].split(" ")
     recutMovie = recutIt(text, allWordClips)
     print("asdf" + str(isinstance(recutMovie, list)))
     if isinstance(recutMovie, list):

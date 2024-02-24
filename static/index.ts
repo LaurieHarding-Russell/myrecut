@@ -2,13 +2,13 @@ const formElement: HTMLFormElement = document.querySelector('form')!;
 const spinner: HTMLDivElement = document.getElementById('spinner') as HTMLDivElement;
 const submitButton: HTMLButtonElement = document.getElementById('submit') as HTMLButtonElement;
 const recutButton: HTMLButtonElement = document.getElementById('recut') as HTMLButtonElement;
+const recutText: HTMLTextAreaElement = document.getElementById('recut-text') as HTMLTextAreaElement;
 
 formElement!.addEventListener('submit', (event: any) => {
     const form = event.currentTarget;
     const url = new URL(form.action);
     const formData = new FormData(form);
     
-    /** @type {Parameters<fetch>[1]} */
     const fetchOptions = {
       method: form.method,
       body: formData,
@@ -27,7 +27,14 @@ formElement!.addEventListener('submit', (event: any) => {
 });
 
 recutButton.addEventListener("click", (event: any) => {
-  fetch("/recut")
+
+  fetch("/recut", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({text: recutText.value})
+  })
     .then( res => res.blob() )
     .then( blob => {
         var file = window.URL.createObjectURL(blob);

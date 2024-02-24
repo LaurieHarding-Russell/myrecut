@@ -33,13 +33,13 @@
 
 #file {
     border: 1px solid #ccc;
-    display: block;
     padding: 1rem 0.5rem;
     cursor: pointer;
-    margin: 1rem 0;
+    margin: 1rem 0.25rem;
 }
 
 #recut {
+    display: block;
     padding: 1rem;
     font-size: 1.5rem;
     background: var(--primary);
@@ -58,6 +58,10 @@
 @layer base {
     button {
         cursor: pointer;
+    }
+
+    label {
+        display: block;
     }
 }
 

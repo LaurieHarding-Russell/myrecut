@@ -95,3 +95,5 @@ yarn.lock
 secrets.prod
 src/main/resources/application-prod.properties
 deploy/docker-compose.yml
+
+__pycache__

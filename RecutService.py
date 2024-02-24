@@ -24,15 +24,16 @@ recutResultVar = TypeVar('recutResultVar', bytes, str, list[str])
 def recutIt(text: list[str], allWordClips: dict[str, list[RecutWord]]) -> recutResultVar:
     recutText = text.copy()
     wordClips = []
+    success = True
     for key in allWordClips:
-        __searchClipForLargestLeftLeaningChunks(allWordClips, key, recutText, wordClips)
+        success = __searchClipForLargestLeftLeaningChunks(allWordClips, key, recutText, wordClips)
 
-    if len(recutText) > 0:
+    if not success:
         raise "error can't get all words"
     return __soundClipsToMovieClips(wordClips)
 
 
-def __searchClipForLargestLeftLeaningChunks(allWordClips, key, recutText, wordClips):
+def __searchClipForLargestLeftLeaningChunks(allWordClips, key, recutText, wordClips) -> bool:
     searchable = True
     while searchable and len(recutText) > 0:
         largestLeftLeaningClip = __findClipForLargestLeftLeaningChunk(key, allWordClips[key], recutText)
@@ -40,7 +41,8 @@ def __searchClipForLargestLeftLeaningChunks(allWordClips, key, recutText, wordCl
             searchable = False
         else:
             wordClips.append(largestLeftLeaningClip)
-            recutText = recutText[largestLeftLeaningClip.index:]
+        recutText = recutText[largestLeftLeaningClip.index:]
+    return len(recutText) == 0
 
 
 def __soundClipsToMovieClips(wordClips: list[ClipLocation]) -> AnyStr:
@@ -61,7 +63,6 @@ def __findClipForLargestLeftLeaningChunk(movie: str, wordsInFrames: list[RecutWo
     clipLocation: list[ClipLocation] = []
     for recutWord in wordsInFrames:
         for clip in clipLocation:
-            print(clip.index)
             if clip.connected and text[clip.index] == recutWord.getWord():
                 clip.end = recutWord
                 clip.index = clip.index + 1
@@ -70,7 +71,10 @@ def __findClipForLargestLeftLeaningChunk(movie: str, wordsInFrames: list[RecutWo
             else:
                 clip.connected = False
         if recutWord.getWord() == text[0]:
-            clipLocation.append(ClipLocation(recutWord, 1, movie))
+            startClip = ClipLocation(recutWord, 1, movie)
+            if 1 >= len(text):
+                return startClip
+            clipLocation.append(startClip)
     return __findLargestClip(clipLocation)
 
 
