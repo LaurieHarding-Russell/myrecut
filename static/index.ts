@@ -1,15 +1,34 @@
 import { RecutWord } from "./recut-word";
 import { Dictionary, RecutService } from "./recut.service";
+import { fromEvent, debounceTime } from 'rxjs';
 
 const formElement: HTMLFormElement = document.querySelector('form')!;
 const spinner: HTMLDivElement = document.getElementById('spinner') as HTMLDivElement;
 const submitButton: HTMLButtonElement = document.getElementById('submit') as HTMLButtonElement;
 const recutButton: HTMLButtonElement = document.getElementById('recut') as HTMLButtonElement;
 const recutText: HTMLTextAreaElement = document.getElementById('recut-text') as HTMLTextAreaElement;
-const listOfThings = document.getElementById('list-of-uploaded') as HTMLUListElement;
-const recutService = RecutService.Instance;
+const listOfThings: HTMLUListElement = document.getElementById('list-of-uploaded') as HTMLUListElement;
+const missingWordDiv: HTMLElement = document.getElementById('missing') as HTMLElement;
 
-var currentState: Dictionary<Array<RecutWord>> = {};
+const recutService = RecutService.Instance;
+let allWords:Array<string> = []
+let currentState: Dictionary<Array<RecutWord>> = {};
+
+const clicks = fromEvent(recutText, 'change');
+const result = clicks
+  .pipe(debounceTime(1000))
+  .subscribe( _ => {
+    console.log("tests");
+    const words = recutText.value.split(" ");
+    let wordsNotPresent: Array<string> = [];
+    
+    for(let word of words) {
+      if (!allWords.includes(word)) {
+        wordsNotPresent.push(word);
+      }
+    }
+    missingWordDiv.innerHTML = wordsNotPresent.join(',');
+  });
 
 recutService.getState()
   .then(state => {
@@ -20,6 +39,7 @@ recutService.getState()
       <li>${movie} ${currentState[movie][0].confidence}</li>
       `
     }
+    allWords = Object.values(currentState).flat().map(value => value.word);
   })
 
 formElement!.addEventListener('submit', (event: any) => {
