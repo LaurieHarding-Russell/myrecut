@@ -26,15 +26,17 @@ def recutIt(text: list[str], allWordClips: dict[str, list[RecutWord]], PATH_TO_R
     recutText = text.copy()
     wordClips = []
     success = True
-    for key in allWordClips:
-        success = __searchClipForLargestLeftLeaningChunks(allWordClips, key, recutText, wordClips)
+
+    for l in range(0, len(recutText)):
+        for key in allWordClips:
+            success = __searchClipForLargestLeftLeaningChunks(allWordClips, key, recutText, wordClips)
 
     if not success:
         raise "error can't get all words"
     return __soundClipsToMovieClips(wordClips, PATH_TO_RESOURCES)
 
 
-def __searchClipForLargestLeftLeaningChunks(allWordClips, key, recutText, wordClips) -> bool:
+def __searchClipForLargestLeftLeaningChunks(allWordClips, key, recutText, wordClips) -> list[str]:
     searchable = True
     while searchable and len(recutText) > 0:
         largestLeftLeaningClip = __findClipForLargestLeftLeaningChunk(key, allWordClips[key], recutText)
@@ -43,7 +45,7 @@ def __searchClipForLargestLeftLeaningChunks(allWordClips, key, recutText, wordCl
         else:
             wordClips.append(largestLeftLeaningClip)
         recutText = recutText[largestLeftLeaningClip.index:]
-    return len(recutText) == 0
+    return recutText
 
 
 def __soundClipsToMovieClips(wordClips: list[ClipLocation], PATH_TO_RESOURCES) -> AnyStr:

@@ -4,9 +4,14 @@ A simple website for taking in a video and recutting it so that it plays the dia
 Requirments:
 - Bazelisk
 - 
+
 Run:
 - `bazel run recut`
+- go to `localhost:8080`
 
+Typescript dev:
+link node modules for your ide.
+`ln -s bazel-bin/node_modules node_modules`
 
 Add python dependency:
 1. add to requirements.in

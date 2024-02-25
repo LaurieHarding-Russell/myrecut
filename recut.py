@@ -1,4 +1,6 @@
+import math
 from io import BytesIO
+from math import floor
 from os import listdir
 from os.path import isfile, join
 
@@ -13,6 +15,7 @@ app = Flask(__name__, static_url_path="")
 
 PATH_TO_RESOURCES = os.path.dirname(__file__)
 DEEP_SPEECH_TIME_STEP = 0.2
+TEN_MINUTES = 60*10
 
 allWordClips: dict[str, list[RecutWord]] = {}
 recutFolder = join(PATH_TO_RESOURCES, "recutAnalysis")
@@ -48,11 +51,28 @@ def processMovie():
     file: FileStorage = request.files.get("file")
     filename = file.filename.split('.')[0]
     file.save(join(PATH_TO_RESOURCES, file.filename))  # Moviepy requires us to save to a file since its calling commands on your machine to do the actual work :(
+    tempFileName = join(PATH_TO_RESOURCES, file.filename)
+    movie = VideoFileClip(tempFileName)
 
-    process = RecutProcess(fileName=filename, PATH_TO_RESOURCES=PATH_TO_RESOURCES)
-    allWordClips[filename] = process.processAllWordsInClip()
-    saveRecutWordsToFile(os.path.join(recutFolder, filename), allWordClips.get(filename))
+    numberOfTenMinuteParts = math.ceil(movie.duration / TEN_MINUTES)
+    partOutMovies(filename, movie, numberOfTenMinuteParts)
+
+    for i in range(0, numberOfTenMinuteParts):
+        partFileName = filename + str(i)
+        process = RecutProcess(fileName=partFileName, PATH_TO_RESOURCES=PATH_TO_RESOURCES)
+        allWordClips[partFileName] = process.processAllWordsInClip()
+        saveRecutWordsToFile(os.path.join(recutFolder, partFileName), allWordClips.get(partFileName))
     return getState()
+
+
+def partOutMovies(filename, movie, parts):
+    for i in range(0, parts):
+        temp: VideoClip
+        if i == parts - 1:
+            temp = movie.subclip(i * TEN_MINUTES, movie.duration - 1)
+        else:
+            temp = movie.subclip(i * TEN_MINUTES, TEN_MINUTES * (i + 1))
+        temp.write_videofile(filename + str(i) + '.mp4', codec='libx264', logger=None)
 
 
 @app.route("/recut", methods=['POST'])
@@ -60,7 +80,6 @@ def recut():
     global allWordClips
     text: list[str] = request.json["text"].split(" ")
     recutMovie = recutIt(text, allWordClips, PATH_TO_RESOURCES)
-    print("asdf" + str(isinstance(recutMovie, list)))
     if isinstance(recutMovie, list):
         make_response("Missing parts of :: " + " ".join(recutMovie), 400)
     return send_file(BytesIO(recutMovie), download_name="recut.mp4", as_attachment=True)
