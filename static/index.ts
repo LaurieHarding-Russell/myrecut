@@ -1,15 +1,25 @@
-import { RecutService } from "./recut.service";
+import { RecutWord } from "./recut-word";
+import { Dictionary, RecutService } from "./recut.service";
 
 const formElement: HTMLFormElement = document.querySelector('form')!;
 const spinner: HTMLDivElement = document.getElementById('spinner') as HTMLDivElement;
 const submitButton: HTMLButtonElement = document.getElementById('submit') as HTMLButtonElement;
 const recutButton: HTMLButtonElement = document.getElementById('recut') as HTMLButtonElement;
 const recutText: HTMLTextAreaElement = document.getElementById('recut-text') as HTMLTextAreaElement;
-
+const listOfThings = document.getElementById('list-of-uploaded') as HTMLUListElement;
 const recutService = RecutService.Instance;
+
+var currentState: Dictionary<Array<RecutWord>> = {};
+
 recutService.getState()
   .then(state => {
-    console.log(state)
+    currentState = state
+    listOfThings.innerHTML = "";
+    for(let movie in currentState) {
+      listOfThings.innerHTML = listOfThings.innerHTML + `
+      <li>${movie} ${currentState[movie][0].confidence}</li>
+      `
+    }
   })
 
 formElement!.addEventListener('submit', (event: any) => {

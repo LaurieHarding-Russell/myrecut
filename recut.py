@@ -32,13 +32,15 @@ def init():
 def index():
     return send_from_directory("static", "index.html")
 
+
 @app.route("/state", methods=['GET'])
 def getState():
     global allWordClips
-    dict = {}
+    dictValue = {}
     for x in allWordClips:
-        dict[x] = [value.serialize() for value in allWordClips[x]]
-    return jsonify(dict)
+        dictValue[x] = [value.serialize() for value in allWordClips[x]]
+    return jsonify(dictValue)
+
 
 @app.route("/analyze", methods=['POST'])
 def processMovie():
@@ -57,7 +59,7 @@ def processMovie():
 def recut():
     global allWordClips
     text: list[str] = request.json["text"].split(" ")
-    recutMovie = recutIt(text, allWordClips)
+    recutMovie = recutIt(text, allWordClips, PATH_TO_RESOURCES)
     print("asdf" + str(isinstance(recutMovie, list)))
     if isinstance(recutMovie, list):
         make_response("Missing parts of :: " + " ".join(recutMovie), 400)

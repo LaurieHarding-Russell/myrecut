@@ -1,3 +1,7 @@
+import { RecutWord } from "./recut-word";
+
+export type Dictionary<T = any> = {[name: string]: T }
+
 export class RecutService {
     
     private static _instance: RecutService;
@@ -34,8 +38,8 @@ export class RecutService {
             .then( res => res.blob() )
     }
 
-    public getState(): Promise<any> {
+    public getState(): Promise<Dictionary<Array<RecutWord>>> {
         return fetch("/state")
-            .then(response => response.json)
+            .then(response => response.json())
     }
 }

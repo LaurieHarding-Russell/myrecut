@@ -1,3 +1,4 @@
+from os.path import join
 from typing import AnyStr, TypeVar
 
 import RecutWord
@@ -21,7 +22,7 @@ class ClipLocation:
 recutResultVar = TypeVar('recutResultVar', bytes, str, list[str])
 
 
-def recutIt(text: list[str], allWordClips: dict[str, list[RecutWord]]) -> recutResultVar:
+def recutIt(text: list[str], allWordClips: dict[str, list[RecutWord]], PATH_TO_RESOURCES) -> recutResultVar:
     recutText = text.copy()
     wordClips = []
     success = True
@@ -30,7 +31,7 @@ def recutIt(text: list[str], allWordClips: dict[str, list[RecutWord]]) -> recutR
 
     if not success:
         raise "error can't get all words"
-    return __soundClipsToMovieClips(wordClips)
+    return __soundClipsToMovieClips(wordClips, PATH_TO_RESOURCES)
 
 
 def __searchClipForLargestLeftLeaningChunks(allWordClips, key, recutText, wordClips) -> bool:
@@ -45,10 +46,10 @@ def __searchClipForLargestLeftLeaningChunks(allWordClips, key, recutText, wordCl
     return len(recutText) == 0
 
 
-def __soundClipsToMovieClips(wordClips: list[ClipLocation]) -> AnyStr:
+def __soundClipsToMovieClips(wordClips: list[ClipLocation], PATH_TO_RESOURCES) -> AnyStr:
     clips = []
     for wordClip in wordClips:
-        movie = VideoFileClip(wordClip.movie)
+        movie = VideoFileClip(join(PATH_TO_RESOURCES, wordClip.movie + ".mp4"))
         clips.append(movie.subclip(wordClip.start.getStart(), wordClip.end.getStop()))
     finalClip = concatenate_videoclips(clips)
 
