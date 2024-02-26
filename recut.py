@@ -15,7 +15,7 @@ app = Flask(__name__, static_url_path="")
 
 PATH_TO_RESOURCES = os.path.dirname(__file__)
 DEEP_SPEECH_TIME_STEP = 0.2
-TEN_MINUTES = 60*10
+PARITION_TIME = 60 * 5
 
 allWordClips: dict[str, list[RecutWord]] = {}
 recutFolder = join(PATH_TO_RESOURCES, "recutAnalysis")
@@ -54,7 +54,7 @@ def processMovie():
     tempFileName = join(PATH_TO_RESOURCES, file.filename)
     movie = VideoFileClip(tempFileName)
 
-    numberOfTenMinuteParts = math.ceil(movie.duration / TEN_MINUTES)
+    numberOfTenMinuteParts = math.ceil(movie.duration / PARITION_TIME)
     partOutMovies(filename, movie, numberOfTenMinuteParts)
 
     for i in range(0, numberOfTenMinuteParts):
@@ -69,9 +69,9 @@ def partOutMovies(filename, movie, parts):
     for i in range(0, parts):
         temp: VideoClip
         if i == parts - 1:
-            temp = movie.subclip(i * TEN_MINUTES, movie.duration - 1)
+            temp = movie.subclip(i * PARITION_TIME, movie.duration - 1)
         else:
-            temp = movie.subclip(i * TEN_MINUTES, TEN_MINUTES * (i + 1))
+            temp = movie.subclip(i * PARITION_TIME, PARITION_TIME * (i + 1))
         temp.write_videofile(filename + str(i) + '.mp4', codec='libx264', logger=None)
 
 
